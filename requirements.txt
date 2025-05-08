@@ -1,0 +1,4 @@
+pillow>=9.0.0
+pystray>=0.19.0
+pywin32>=300 ; sys_platform == 'win32'
+win10toast>=0.9 ; sys_platform == 'win32'
