@@ -2,7 +2,7 @@
 
 This is the compiled executable version of the Athkar Reminder application.
 
-*[العربية أدناه](#أذكار-التذكير---النسخة-التنفيذية)*
+*[العربية](#أذكار-التذكير---النسخة-التنفيذية)*
 
 ## Running the Application
 
