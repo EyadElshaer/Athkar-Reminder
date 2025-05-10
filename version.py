@@ -4,7 +4,7 @@ This file is used to store the current version number.
 """
 
 # Version information
-VERSION = "1.0.0"
+VERSION = "1.0.1"
 
 # Build date (automatically updated when version changes)
 BUILD_DATE = "2023-07-15"

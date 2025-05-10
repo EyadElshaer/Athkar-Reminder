@@ -86,17 +86,20 @@ class NotificationWindow:
         # Get available fonts
         available_fonts = font.families()
         best_fonts = [
+            "Segoe UI",
+            "Calibri",
+            "Tahoma",
+            "Arial",
+            "Verdana",
+            "Open Sans",
+            "Roboto",
+            "Noto Sans",
+            "Dubai",
             "Traditional Arabic",
             "Simplified Arabic",
             "Amiri",
-            "Arabic Typesetting",
-            "Aldhabi",
-            "Microsoft Uighur",
             "Arial Unicode MS",
-            "Times New Roman",
-            "Segoe UI",
-            "Calibri",
-            "Tahoma"
+            "Microsoft Uighur"
         ]
         message_font = next((f for f in best_fonts if f in available_fonts), "Arial")
 
@@ -113,7 +116,7 @@ class NotificationWindow:
         self.message = message
         self.label = tk.Label(content_frame, text=message,
                           bg=bg_color, fg=fg_color,
-                          font=(message_font, 16, "bold"),  # Smaller font
+                          font=(message_font, 18, "bold"),  # Increased font size for better readability
                           justify="center",
                           wraplength=desired_width - 40)  # More text per line
         self.label.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)  # Smaller padding
@@ -237,11 +240,13 @@ class NotificationWindow:
         self.y = None
 
     def on_motion(self, event):
-        deltax = event.x - self.x
-        deltay = event.y - self.y
-        x = self.root.winfo_x() + deltax
-        y = self.root.winfo_y() + deltay
-        self.root.geometry(f"+{x}+{y}")
+        # Check if self.x and self.y are not None to avoid TypeError
+        if self.x is not None and self.y is not None:
+            deltax = event.x - self.x
+            deltay = event.y - self.y
+            x = self.root.winfo_x() + deltax
+            y = self.root.winfo_y() + deltay
+            self.root.geometry(f"+{x}+{y}")
 
     def close(self):
         self.fade_out()
@@ -283,7 +288,7 @@ class ModernButton(tk.Canvas):
         # Create the button
         self.bg_id = self.create_image(width//2, height//2, image=self.normal_img)
         self.text_id = self.create_text(width//2, height//2, text=text, fill=text_color,
-                                       font=("Segoe UI", 10, "bold"))
+                                       font=("Segoe UI", 11, "bold"))  # Increased font size for better readability
 
         # Bind events
         self.bind("<Enter>", self._on_enter)
@@ -382,8 +387,9 @@ class AthkarReminder:
         self.load_settings()
 
         self.root.title(self.get_text("app_title"))
-        self.root.geometry("500x550")  # Larger window for modern UI
+        self.root.geometry("600x650")  # Larger window for modern UI
         self.root.resizable(True, True)  # Allow resizing for better UX
+        self.root.minsize(600, 650)    # Set minimum size to prevent UI elements from being hidden
 
         # Flag to track if app is running in system tray
         self.running_in_tray = False
@@ -648,19 +654,19 @@ class AthkarReminder:
 
     def create_ui(self):
         style = ttk.Style()
-        style.configure("Title.TLabel", font=("Segoe UI", 18, "bold"))
-        style.configure("Header.TLabel", font=("Segoe UI", 11))
-        style.configure("Content.TLabel", font=("Segoe UI", 10))
+        style.configure("Title.TLabel", font=("Segoe UI", 20, "bold"))
+        style.configure("Header.TLabel", font=("Segoe UI", 12))
+        style.configure("Content.TLabel", font=("Segoe UI", 11))
 
         # Add RTL support for Arabic
-        style.configure("RTL.TLabel", font=("Traditional Arabic", 12), justify="right")
-        style.configure("RTL.Title.TLabel", font=("Traditional Arabic", 18, "bold"), justify="right")
-        style.configure("RTL.Header.TLabel", font=("Traditional Arabic", 13), justify="right")
-        style.configure("RTL.Content.TLabel", font=("Traditional Arabic", 12), justify="right")
+        style.configure("RTL.TLabel", font=("Dubai", 13), justify="right")
+        style.configure("RTL.Title.TLabel", font=("Dubai", 20, "bold"), justify="right")
+        style.configure("RTL.Header.TLabel", font=("Dubai", 14), justify="right")
+        style.configure("RTL.Content.TLabel", font=("Dubai", 13), justify="right")
 
         # Configure status label styles
-        style.configure("Status.TLabel", font=("Segoe UI", 10), padding=5)
-        style.configure("RTL.Status.TLabel", font=("Traditional Arabic", 12), justify="right", padding=5)
+        style.configure("Status.TLabel", font=("Segoe UI", 11), padding=5)
+        style.configure("RTL.Status.TLabel", font=("Dubai", 13), justify="right", padding=5)
 
         # Main frame with padding
         main_frame = ttk.Frame(self.root, padding="10")
@@ -714,8 +720,13 @@ class AthkarReminder:
         interval_label.pack(side=tk.LEFT, padx=(0, 5))
 
         interval_values = [1, 5, 10, 15, 30, 60, 120, 180, 240]
+
+        # Create a custom style for the combobox with larger font
+        style = ttk.Style()
+        style.configure("Custom.TCombobox", font=("Segoe UI", 12))
+
         interval_combo = ttk.Combobox(interval_frame, textvariable=self.reminder_interval,
-                                    values=interval_values, width=5)
+                                    values=interval_values, width=5, style="Custom.TCombobox")
         interval_combo.pack(side=tk.LEFT)
         interval_combo.bind("<<ComboboxSelected>>", self.update_interval)
         # Add binding for custom values when user presses Enter
@@ -770,7 +781,7 @@ class AthkarReminder:
         # Listbox to display all duaas
         self.duaas_listbox = tk.Listbox(list_frame, height=10, width=50,
                                       yscrollcommand=scrollbar.set,
-                                      font=("Segoe UI", 10))
+                                      font=("Segoe UI", 12))  # Increased font size for better readability
         self.duaas_listbox.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         scrollbar.config(command=self.duaas_listbox.yview)
 
@@ -784,7 +795,9 @@ class AthkarReminder:
 
         # Text entry for new duaa
         self.new_duaa_var = tk.StringVar()
-        new_duaa_entry = ttk.Entry(add_frame, textvariable=self.new_duaa_var, width=50)
+        style = ttk.Style()
+        style.configure("Custom.TEntry", font=("Segoe UI", 12))  # Create custom style with larger font
+        new_duaa_entry = ttk.Entry(add_frame, textvariable=self.new_duaa_var, width=50, style="Custom.TEntry")
         new_duaa_entry.pack(fill=tk.X, padx=5, pady=5)
 
         # Buttons frame for duaa management
@@ -816,9 +829,13 @@ class AthkarReminder:
                                   style="Content.TLabel")
         language_label.pack(side=tk.LEFT, padx=(0, 10), pady=5)
 
-        # Create language dropdown
+        # Create language dropdown with custom style for better readability
+        style = ttk.Style()
+        style.configure("Language.TCombobox", font=("Segoe UI", 12))
+
         language_combo = ttk.Combobox(language_frame, textvariable=self.language,
-                                     values=list(LANGUAGES.keys()), width=15, state="readonly")
+                                     values=list(LANGUAGES.keys()), width=15,
+                                     state="readonly", style="Language.TCombobox")
         language_combo.pack(side=tk.LEFT, padx=5, pady=5)
 
         # Bind language change event
@@ -866,14 +883,14 @@ class AthkarReminder:
             title_style = "AboutTitle.TLabel"
 
         app_title = ttk.Label(title_frame, text=self.get_text("app_title"),
-                           style=title_style, font=("Segoe UI", 22, "bold"))
+                           style=title_style, font=("Segoe UI", 24, "bold"))  # Increased font size
         app_title.pack(anchor=tk.CENTER)
 
         # App version - get from version file
         version_text = f"v{get_version()}"
         version_label = ttk.Label(title_frame, text=version_text,
                                style="AboutVersion.TLabel",
-                               font=("Segoe UI", 10))
+                               font=("Segoe UI", 12))  # Increased font size
         version_label.pack(anchor=tk.CENTER, pady=(0, 10))
 
         # Separator
@@ -890,8 +907,12 @@ class AthkarReminder:
         else:
             text_style = "AboutContent.TLabel"
 
+        # Adjust wraplength based on language to accommodate Arabic text
+        wraplength = 450 if self.language.get() == "العربية" else 400
+        justify_style = "right" if self.language.get() == "العربية" else "center"
+
         about_label = ttk.Label(about_text_frame, text=self.get_text("about_text"),
-                              wraplength=400, justify="center", style=text_style)
+                              wraplength=wraplength, justify=justify_style, style=text_style)
         about_label.pack(fill=tk.X, padx=10, pady=10)
 
         # Separator
@@ -903,25 +924,34 @@ class AthkarReminder:
         dev_frame.pack(fill=tk.X, padx=20, pady=5)
 
         # Developer title
+        # Use appropriate font and style for Arabic
+        dev_title_font = ("Dubai", 15, "bold") if self.language.get() == "العربية" else ("Segoe UI", 14, "bold")
+        dev_title_style = "RTL.AboutDeveloperTitle.TLabel" if self.language.get() == "العربية" else "AboutDeveloperTitle.TLabel"
+
         dev_title = ttk.Label(dev_frame, text=self.get_text("developer_title"),
-                           style="AboutDeveloperTitle.TLabel", font=("Segoe UI", 12, "bold"))
+                           style=dev_title_style, font=dev_title_font)
         dev_title.pack(anchor=tk.CENTER, pady=(5, 10))
 
         # Developer name
+        dev_name_font = ("Dubai", 14) if self.language.get() == "العربية" else ("Segoe UI", 13)
         dev_name = ttk.Label(dev_frame, text=self.get_text("developer_name"),
-                          style=text_style, font=("Segoe UI", 11))
+                          style=text_style, font=dev_name_font)
         dev_name.pack(anchor=tk.CENTER)
 
         # Copyright information
         copyright_frame = ttk.Frame(content_frame, style="AboutCard.TFrame")
-        copyright_frame.pack(fill=tk.X, side=tk.BOTTOM, pady=10)
+        copyright_frame.pack(fill=tk.X, side=tk.BOTTOM, pady=20)  # Increased padding
 
         current_year = datetime.now().year
         copyright_text = f"© {current_year} {self.get_text('copyright_text')}"
 
+        # Use a larger font for better readability
+        font_size = 12 if self.language.get() == "العربية" else 11
+        font_family = "Dubai" if self.language.get() == "العربية" else "Segoe UI"
+
         copyright_label = ttk.Label(copyright_frame, text=copyright_text,
-                                 style=text_style, font=("Segoe UI", 9))
-        copyright_label.pack(anchor=tk.CENTER, pady=5)
+                                 style=text_style, font=(font_family, font_size))
+        copyright_label.pack(anchor=tk.CENTER, pady=10)  # Increased padding
 
     def is_dark_mode(self):
         """Check if Windows is in dark mode"""
@@ -952,17 +982,18 @@ class AthkarReminder:
             # Special styles for About tab
             style.configure("About.TFrame", background="#1e1e1e")
             style.configure("AboutCard.TFrame", background="#2d3339")
-            style.configure("AboutTitle.TLabel", background="#2d3339", foreground="#ffffff", font=("Segoe UI", 22, "bold"))
-            style.configure("AboutVersion.TLabel", background="#2d3339", foreground="#6c757d", font=("Segoe UI", 10))
-            style.configure("AboutContent.TLabel", background="#2d3339", foreground="#ffffff")
-            style.configure("AboutDeveloperTitle.TLabel", background="#2d3339", foreground="#6c757d", font=("Segoe UI", 12, "bold"))
+            style.configure("AboutTitle.TLabel", background="#2d3339", foreground="#ffffff", font=("Segoe UI", 24, "bold"))
+            style.configure("AboutVersion.TLabel", background="#2d3339", foreground="#6c757d", font=("Segoe UI", 12))
+            style.configure("AboutContent.TLabel", background="#2d3339", foreground="#ffffff", font=("Segoe UI", 12))
+            style.configure("AboutDeveloperTitle.TLabel", background="#2d3339", foreground="#6c757d", font=("Segoe UI", 14, "bold"))
 
             # Style for separators
             style.configure("TSeparator", background="#495057")
 
             # Style for notebook and tabs
             style.configure("TNotebook", background="#1e1e1e", borderwidth=0)
-            style.configure("TNotebook.Tab", background="#2d2d2d", foreground="#ffffff", padding=[10, 2])
+            style.configure("TNotebook.Tab", background="#2d2d2d", foreground="#ffffff",
+                          padding=[10, 2], font=("Segoe UI", 11))  # Added font size for better readability
             style.map("TNotebook.Tab",
                     background=[("selected", "#3d3d3d")],
                     foreground=[("selected", "#ffffff")])
@@ -979,8 +1010,9 @@ class AthkarReminder:
             style.configure("RTL.Status.TLabel", background="#1e1e1e", foreground="#ffffff")
 
             # RTL styles for About tab
-            style.configure("RTL.AboutTitle.TLabel", background="#2d3339", foreground="#ffffff", font=("Traditional Arabic", 22, "bold"), justify="right")
-            style.configure("RTL.AboutContent.TLabel", background="#2d3339", foreground="#ffffff", font=("Traditional Arabic", 12), justify="right")
+            style.configure("RTL.AboutTitle.TLabel", background="#2d3339", foreground="#ffffff", font=("Dubai", 24, "bold"), justify="right")
+            style.configure("RTL.AboutContent.TLabel", background="#2d3339", foreground="#ffffff", font=("Dubai", 14), justify="right")
+            style.configure("RTL.AboutDeveloperTitle.TLabel", background="#2d3339", foreground="#6c757d", font=("Dubai", 16, "bold"), justify="right")
         else:
             # Light mode
             self.root.configure(bg="#f0f0f0")
@@ -998,17 +1030,18 @@ class AthkarReminder:
             # Special styles for About tab
             style.configure("About.TFrame", background="#f0f0f0")
             style.configure("AboutCard.TFrame", background="#ffffff")
-            style.configure("AboutTitle.TLabel", background="#ffffff", foreground="#212529", font=("Segoe UI", 22, "bold"))
-            style.configure("AboutVersion.TLabel", background="#ffffff", foreground="#6c757d", font=("Segoe UI", 10))
-            style.configure("AboutContent.TLabel", background="#ffffff", foreground="#212529")
-            style.configure("AboutDeveloperTitle.TLabel", background="#ffffff", foreground="#6c757d", font=("Segoe UI", 12, "bold"))
+            style.configure("AboutTitle.TLabel", background="#ffffff", foreground="#212529", font=("Segoe UI", 24, "bold"))
+            style.configure("AboutVersion.TLabel", background="#ffffff", foreground="#6c757d", font=("Segoe UI", 12))
+            style.configure("AboutContent.TLabel", background="#ffffff", foreground="#212529", font=("Segoe UI", 12))
+            style.configure("AboutDeveloperTitle.TLabel", background="#ffffff", foreground="#6c757d", font=("Segoe UI", 14, "bold"))
 
             # Style for separators
             style.configure("TSeparator", background="#dee2e6")
 
             # Style for notebook and tabs
             style.configure("TNotebook", background="#f0f0f0", borderwidth=0)
-            style.configure("TNotebook.Tab", background="#e1e1e1", foreground="#000000", padding=[10, 2])
+            style.configure("TNotebook.Tab", background="#e1e1e1", foreground="#000000",
+                          padding=[10, 2], font=("Segoe UI", 11))  # Added font size for better readability
             style.map("TNotebook.Tab",
                     background=[("selected", "#ffffff")],
                     foreground=[("selected", "#000000")])
@@ -1025,8 +1058,9 @@ class AthkarReminder:
             style.configure("RTL.Status.TLabel", background="#f0f0f0", foreground="#000000")
 
             # RTL styles for About tab
-            style.configure("RTL.AboutTitle.TLabel", background="#ffffff", foreground="#212529", font=("Traditional Arabic", 22, "bold"), justify="right")
-            style.configure("RTL.AboutContent.TLabel", background="#ffffff", foreground="#212529", font=("Traditional Arabic", 12), justify="right")
+            style.configure("RTL.AboutTitle.TLabel", background="#ffffff", foreground="#212529", font=("Dubai", 24, "bold"), justify="right")
+            style.configure("RTL.AboutContent.TLabel", background="#ffffff", foreground="#212529", font=("Dubai", 14), justify="right")
+            style.configure("RTL.AboutDeveloperTitle.TLabel", background="#ffffff", foreground="#6c757d", font=("Dubai", 16, "bold"), justify="right")
 
     def get_validated_interval(self):
         """Get the current interval value, ensuring it's a valid integer"""
